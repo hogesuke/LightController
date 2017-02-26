@@ -9,23 +9,40 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
+  Button,
   View
 } from 'react-native';
 
 export default class LightController extends Component {
+  constructor(props) {
+    super(props);
+
+    const ws = new WebSocket('ws://192.168.1.13:8080/light');
+    this.state = { ws: ws };
+  }
+  handleOnClick() {
+    const { ws } = this.state;
+    ws.send('power_on');
+  }
+  handleOffClick() {
+    const { ws } = this.state;
+    ws.send('power_off');
+  }
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+        <Button
+          onPress={this.handleOnClick.bind(this)}
+          title='On'
+          color="#841584"
+          accessibilityLabel="Power-on button"
+        />
+        <Button
+          onPress={this.handleOffClick.bind(this)}
+          title='Off'
+          color="#841584"
+          accessibilityLabel="Power-off button"
+        />
       </View>
     );
   }
@@ -36,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#ffffff',
   },
   welcome: {
     fontSize: 20,
