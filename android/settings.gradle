@@ -1,0 +1,3 @@
+rootProject.name = 'LightController'
+
+include ':app'
