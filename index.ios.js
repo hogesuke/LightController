@@ -18,7 +18,12 @@ export default class LightController extends Component {
     super(props);
 
     const ws = new WebSocket('ws://192.168.1.13:8080/light');
-    this.state = { ws: ws };
+    this.state = { ws: ws, isPowerOn: false };
+
+    ws.onmessage = (e) => this.handleReceiveMessage(e.data);
+  }
+  handleReceiveMessage(message) {
+    this.setState({ isPowerOn: message === 'power_on' });
   }
   handleOnClick() {
     const { ws } = this.state;
@@ -30,19 +35,19 @@ export default class LightController extends Component {
   }
   render() {
     return (
-      <View style={styles.container}>
-        <Button
+      <View style={[styles.container, this.state.isPowerOn ? styles.light : styles.dark]}>
+        <Text
+          style={[styles.button, styles.on]}
           onPress={this.handleOnClick.bind(this)}
-          title='On'
-          color="#841584"
-          accessibilityLabel="Power-on button"
-        />
-        <Button
+        >
+          ON
+        </Text>
+        <Text
+          style={[styles.button, styles.off]}
           onPress={this.handleOffClick.bind(this)}
-          title='Off'
-          color="#841584"
-          accessibilityLabel="Power-off button"
-        />
+        >
+          OFF
+        </Text>
       </View>
     );
   }
@@ -55,16 +60,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  light: {
+    backgroundColor: '#ffffff'
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  dark: {
+    backgroundColor: '#000000'
   },
+  on: {
+    backgroundColor: '#b1191e'
+  },
+  off: {
+    backgroundColor: '#2138a3'
+  },
+  button: {
+    margin: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingRight: 35,
+    paddingLeft: 35,
+    color: "#000000",
+    fontSize: 80
+  }
 });
 
 AppRegistry.registerComponent('LightController', () => LightController);
