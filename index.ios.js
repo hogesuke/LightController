@@ -17,10 +17,22 @@ export default class LightController extends Component {
   constructor(props) {
     super(props);
 
+    this.state = { isPowerOn: false };
+  }
+  componentDidMount() {
     const ws = new WebSocket('ws://192.168.1.13:8080/light');
-    this.state = { ws: ws, isPowerOn: false };
 
-    ws.onmessage = (e) => this.handleReceiveMessage(e.data);
+    this.setState({ ws: ws });
+
+    ws.onmessage = (e) => {
+      this.handleReceiveMessage(e.data);
+      this.log(e.data);
+    };
+    ws.onopen = (e) => this.log(e.data);
+    ws.onclose = (e) => this.log(e.data);
+  }
+  log(message) {
+    this.setState({ log: message });
   }
   handleReceiveMessage(message) {
     this.setState({ isPowerOn: message === 'power_on' });
@@ -47,6 +59,9 @@ export default class LightController extends Component {
           onPress={this.handleOffClick.bind(this)}
         >
           OFF
+        </Text>
+        <Text style={styles.log} >
+          {this.state.log}
         </Text>
       </View>
     );
@@ -80,6 +95,11 @@ const styles = StyleSheet.create({
     paddingLeft: 35,
     color: "#000000",
     fontSize: 80
+  },
+  log: {
+    margin: 20,
+    fontSize: 20,
+    color: "#b1191e",
   }
 });
 
